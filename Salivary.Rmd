@@ -11,7 +11,6 @@ and login the git.
 
 ### Data load
 ```{r}
-
 Saliva <- read.csv("~/Documents/R/Salivary/Saliva_TERT_pik3ca.csv")
 ```
 
@@ -32,8 +31,7 @@ summary(Saliva)
 ```{r echo=FALSE}
 Saliva$hist_group<-factor(Saliva$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc"))
 Saliva$sex <- factor(Saliva$sex, levels=c(1,2), labels = c("male", "female"))
-qplot(size, telomere_length, data=Saliva, shape=hist_group, ylim = 40)
-
+qplot(size, telomere_length, data=Saliva, shape=hist_group, ylim = c(0,40))
 ```
 
 ### ploting size vs PIK3CA expression , histology group
@@ -41,9 +39,14 @@ qplot(size, telomere_length, data=Saliva, shape=hist_group, ylim = 40)
 qplot(size, PIK3CA_amp, data=Saliva, shape=hist_group)
 ```
 
+### ploting size vs Mitochondria copy number, histology group
+```{r echo=FALSE}
+qplot(size, MT_copynumber, data=Saliva, shape = hist_group, ylim = c(0,9))
+```
+
+
 ### Sex table
 ```{r echo=FALSE}
-
 sexvar<-c("sex", "age", "location", "hist_group","size" )
 Saliva_table<-Saliva[sexvar]
 # res_sex= mytable(sex~.,data=Saliva_table)
