@@ -3,10 +3,11 @@ output: html_document
 runtime: shiny
 ---
 # Salivary gland tumor genetics project
+
 ### Git control
-Open the shell.
-git push -u origin master
-and login the git.
+Open the shell.  
+git push -u origin master  
+and login the git.  
 
 ### Data load
 ```{r}
@@ -30,11 +31,12 @@ summary(Saliva)
 ### ploting size vs telomere lengh , histology group
 ```{r echo=FALSE}
 Saliva$hist_group<-factor(Saliva$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc"))
-qplot(size, telomere_length, data=Saliva, shape=hist_group)
+Saliva$sex <- factor(Saliva$sex, levels=c(1,2), labels = c("male", "female"))
+qplot(size, telomere_length, data=Saliva, shape=hist_group, ylim = 40)
 
 ```
-### ploting size vs PIK3CA expression , histology group
 
+### ploting size vs PIK3CA expression , histology group
 ```{r echo=FALSE}
 qplot(size, PIK3CA_amp, data=Saliva, shape=hist_group)
 ```
