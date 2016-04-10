@@ -4,9 +4,9 @@ runtime: shiny
 ---
 # Salivary gland tumor genetics project
 ### Git control
-Open the shell.
-git push -u origin master
-and login the git.
+Open the shell.  
+git push -u origin master  
+and login the git.  
 
 ### Data load
 ```{r}
