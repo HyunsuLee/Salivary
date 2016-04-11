@@ -49,7 +49,7 @@ sexvar<-c("sex", "age", "location", "hist_group","size" )
 #mytable(hist_group~., data=Saliva_table) 
 ```
 
-### Histology based seletion
+### Gender table
 ```{r echo=FALSE}
 Saliva_3 <- subset(Saliva, hist_group != "etc") # creating data subset excluing etc group of histolgy.
 Saliva_3_table <- Saliva_3[sexvar]
@@ -57,7 +57,11 @@ Saliva_3_table <- Saliva_3[sexvar]
 #ztable(res_sex_3)
 #res_hist_3= mytable(hist_group~., data=Saliva_3_table)
 #ztable(res_hist_3)
-mytable(sex~.,data=Saliva_3_table) 
+mytable(sex~.,data=Saliva_3_table)
+```
+
+### Histology-based table
+```{r echo=FALSE}
 mytable(hist_group~., data=Saliva_3_table)
 ```
 
