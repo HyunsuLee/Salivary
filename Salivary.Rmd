@@ -31,24 +31,22 @@ summary(Saliva)
 
 ```{r echo=FALSE}
 #data manipulation 
-Saliva$hist_group<-factor(Saliva$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc")) # naming the histology group
+Saliva$hist_group<-factor(Saliva$hist_group, levels=c(1,2,3), labels = c("pleomorphic adenoma", "warthin", "carcinoma")) # naming the histology group
 Saliva$sex <- factor(Saliva$sex, levels=c(1,2), labels = c("male", "female")) # naming the gender
 ```
 
-### Gender table
+
 ```{r echo=FALSE}
 sexvar<-c("sex", "age", "location", "hist_group","size" )
-Saliva_table<-Saliva[sexvar] #create new data set for creating mytable
-# res_sex= mytable(sex~.,data=Saliva_table)
-# ztable(res_sex)
-mytable(sex~.,data=Saliva_table) #moon's package
+#Saliva_table<-Saliva[sexvar] #create new data set for creating mytable
+#mytable(sex~.,data=Saliva_table) #moon's package
 ```
 
-### Histology table
+
 ```{r echo=FALSE}
 #res_hist= mytable(hist_group~., data=Saliva_table)
 #ztable(res_hist)
-mytable(hist_group~., data=Saliva_table) 
+#mytable(hist_group~., data=Saliva_table) 
 ```
 
 ### Histology based seletion
