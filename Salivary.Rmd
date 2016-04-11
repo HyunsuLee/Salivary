@@ -81,3 +81,15 @@ qplot(hist_group, PIK3CA_amp, data=Saliva_3, geom=c("boxplot", "jitter"), fill=h
 Saliva_3_MT <- subset(Saliva_3, MT_copynumber<100)
 qplot(hist_group, MT_copynumber, data=Saliva_3_MT, geom=c("boxplot", "jitter"), fill=hist_group)
 ```
+
+### ANOVA
+```{r echo=FALSE}
+Saliva.size.aov <- aov(size~hist_group, data=Saliva_3)
+summary(Saliva.size.aov)
+Saliva.tl.aov <- aov(telomere_length~hist_group, data=Saliva_3_TL)
+summary(Saliva.tl.aov)
+Saliva.PIK.aov <- aov(PIK3CA_amp~hist_group, data=Saliva_3)
+summary(Saliva.PIK.aov)
+Saliva.MT.aov <- aov(MT_copynumber~hist_group, data=Saliva_3_MT)
+summary(Saliva.MT.aov)
+```
