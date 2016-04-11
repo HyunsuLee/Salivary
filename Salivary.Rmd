@@ -100,32 +100,32 @@ Saliva.MT.aov <- aov(MT_copynumber~hist_group, data=Saliva_3_MT)
 summary(Saliva.MT.aov)
 ```
 
-### ploting size vs telomere length , histology&gender group
+### ploting size vs telomere length , histology group
 ```{r echo=FALSE}
-qplot(size, telomere_length, data=Saliva_3, facets=hist_group~sex, shape=hist_group, color = hist_group, ylim = c(0,40))
+qplot(size, telomere_length, data=Saliva_3, shape=hist_group, color = hist_group, ylim = c(0,40))
 ```
 
-### ploting size vs PIK3CA expression , histology&gender group
+### ploting size vs PIK3CA expression , histology group
 ```{r echo=FALSE}
-qplot(size, PIK3CA_amp, data=Saliva_3, facets=hist_group~sex, shape=hist_group, color = hist_group)
+qplot(size, PIK3CA_amp, data=Saliva_3, shape=hist_group, color = hist_group)
 ```
 
-### ploting size vs Mitochondria copy number, histology&gender group
+### ploting size vs Mitochondria copy number, histology group
 ```{r echo=FALSE}
-qplot(size, MT_copynumber, data=Saliva_3, facets=hist_group~sex, shape = hist_group, color = hist_group, ylim = c(0,9))
+qplot(size, MT_copynumber, data=Saliva_3, shape = hist_group, color = hist_group, ylim = c(0,9))
 ```
 
-### ploting telomere length vs PIK3CA, histology&gender group
+### ploting telomere length vs PIK3CA, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, PIK3CA_amp, data=Saliva_3, facets=hist_group~sex, shape=hist_group, color = hist_group, xlim = c(0,40))
+qplot(telomere_length, PIK3CA_amp, data=Saliva_3,  shape=hist_group, color = hist_group, xlim = c(0,40))
 ```
 
-### ploting telomere length vs mitochondria, histology&gender group
+### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, MT_copynumber, data=Saliva_3, facets=hist_group~sex, shape=hist_group, color = hist_group, xlim = c(0,40), ylim = c(0,9))
+qplot(telomere_length, MT_copynumber, data=Saliva_3,  shape=hist_group, color = hist_group, xlim = c(0,40), ylim = c(0,9))
 ```
 
-### ploting telomere length vs mitochondria, histology&gender group
+### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
-qplot(PIK3CA_amp, MT_copynumber, data=Saliva_3, facets=hist_group~sex, shape=hist_group, color = hist_group, ylim = c(0,9))
+qplot(PIK3CA_amp, MT_copynumber, data=Saliva_3, shape = hist_group, color = hist_group, ylim = c(0,9))
 ```
