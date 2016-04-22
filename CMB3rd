@@ -1,0 +1,22 @@
+---
+title: "CBM3rd"
+author: "Hyunsu Lee"
+date: "April 22, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## load libary
+```{r, echo=FALSE}
+#library(foreign) spss package가 있지만 에러가 남.
+library(memisc)
+library(ggplot2)
+```
+
+## load file
+```{r, echo=FALSE}
+#db = file.choose() #파일 경로를 db에 저장. working directory설정하면 상관없다.
+cbm<-as.data.frame(as.data.set(spss.system.file('CBM3rd.sav'))) #working directory에 있는 파일 바로 불러 cbm에 저장
+head(cbm) #data check
+```
