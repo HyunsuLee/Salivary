@@ -9,7 +9,7 @@ runtime: shiny
 Open the shell.  
 git push -u origin master  
 and login the git.  
-
+.
 ### Data load
 ```{r echo=FALSE}
 Saliva <- read.csv("~/Documents/R/Salivary/Saliva_TERT_pik3ca.csv")
