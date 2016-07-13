@@ -32,42 +32,20 @@ d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female"))
 
 ### Gender table
 ```{r echo=FALSE}
-
 sexvar<-c("sex", "age", "location", "hist_group","size" )
 d_t<-d[sexvar]
-sex_table <- mytable(sex~.,data=d_t)
-ztable(sex_table)
+
+ztable( mytable(sex~.,data=d_t))
 ```
 
 ### Histology table
 ```{r echo=FALSE}
-hist_table <- mytable(hist_group~., data=d_t)
-ztable(hist_table)
+ztable(mytable(hist_group~., data=d_t))
 ```
 
-### Histology based seletion
-```{r echo=FALSE}
-Saliva_3 <- subset(Saliva, hist_group<4)
->>>>>>> origin/master
-Saliva_3_table <- Saliva_3[sexvar]
-#res_sex_3= mytable(sex~.,data=Saliva_3_table)
-#ztable(res_sex_3)
-#res_hist_3= mytable(hist_group~., data=Saliva_3_table)
-#ztable(res_hist_3)
-mytable(sex~.,data=Saliva_3_table)
-<<<<<<< HEAD
-```
-
-### Histology-based table
-```{r echo=FALSE}
-=======
->>>>>>> origin/master
-mytable(hist_group~., data=Saliva_3_table)
-```
 
 ### Box plot
 ```{r echo=FALSE}
-<<<<<<< HEAD
 Saliva_3_TL <- subset(Saliva_3, telomere_length<40) # excluding outlier data in the telomere length
 qplot(hist_group, size, data = Saliva_3, geom = c("boxplot", "jitter"), fill = hist_group) # plotting the box plot for size
 qplot(hist_group, telomere_length, data=Saliva_3_TL, geom=c("boxplot", "jitter"), fill=hist_group) # plotting the box plot for telomere length
