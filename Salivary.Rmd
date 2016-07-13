@@ -4,39 +4,27 @@ runtime: shiny
 ---
 # Salivary gland tumor genetics project
 
-<<<<<<< HEAD
-### Git control
-Open the shell.  
-git push -u origin master  
-and login the git.  
-##
+I am writing a paper descring these result at google docs.
+
 
 ### Data load
 ```{r echo=FALSE}
-Saliva <- read.csv("~/Documents/R/Salivary/Saliva_TERT_pik3ca.csv")
+d <- read.csv("Saliva_TERT_pik3ca.csv")
 ```
 
 
 ```{r echo=FALSE}
 # loading librarys
-require("ggplot2", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
-require("moonBook", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
-require("ztable", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+require("ggplot2")
+require("moonBook")
+require("ztable")
 ```
 
-
-=======
-### Data load
-```{r}
-
-Saliva <- read.csv("~/Documents/R/Salivary/Saliva_TERT_pik3ca.csv")
-```
->>>>>>> origin/master
-### Data summary
+### Data summary and manupulation
 ```{r echo=FALSE}
-summary(Saliva)
+summary(d)
 ```
-<<<<<<< HEAD
+
 
 
 ```{r echo=FALSE}
