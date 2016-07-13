@@ -23,76 +23,26 @@ require("ztable")
 ### Data summary and manupulation
 ```{r echo=FALSE}
 summary(d)
+
+# naming the histology group
+d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc")) 
+d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
 ```
 
-
-
-```{r echo=FALSE}
-#data manipulation 
-Saliva$hist_group<-factor(Saliva$hist_group, levels=c(1,2,3), labels = c("pleomorphic adenoma", "warthin", "carcinoma")) # naming the histology group
-Saliva$sex <- factor(Saliva$sex, levels=c(1,2), labels = c("male", "female")) # naming the gender
-```
-
-
-```{r echo=FALSE}
-sexvar<-c("sex", "age", "location", "hist_group","size" )
-#Saliva_table<-Saliva[sexvar] #create new data set for creating mytable
-#mytable(sex~.,data=Saliva_table) #moon's package
-```
-
-
-```{r echo=FALSE}
-#res_hist= mytable(hist_group~., data=Saliva_table)
-#ztable(res_hist)
-#mytable(hist_group~., data=Saliva_table) 
-```
 
 ### Gender table
 ```{r echo=FALSE}
-Saliva_3 <- subset(Saliva, hist_group != "etc") # creating data subset excluing etc group of histolgy.
-=======
-### ploting size vs telomere lengh , histology group
-1 = pleomorphic adenoma
-2 = warthin tumor
-3 = carcinoma
-4 = other benign
-```{r echo=FALSE}
-require("ggplot2", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
-qplot(size, telomere_length, data=Saliva, shape=factor(hist_group))
-qplot(size, telomere_length, data=Saliva, shape=factor(hist_group==1, TRUE))
-qplot(size, telomere_length, data=Saliva, shape=factor(hist_group==2, TRUE))
-qplot(size, telomere_length, data=Saliva, shape=factor(hist_group==3, TRUE))
-qplot(size, telomere_length, data=Saliva, shape=factor(hist_group==4, TRUE))
-```
-### ploting size vs PIK3CA expression , histology group
-1 = pleomorphic adenoma
-2 = warthin tumor
-3 = carcinoma
-4 = other benign
-```{r echo=FALSE}
-qplot(size, PIK3CA_amp, data=Saliva, shape=factor(hist_group))
-qplot(size, PIK3CA_amp, data=Saliva, shape=factor(hist_group==1, TRUE))
-qplot(size, PIK3CA_amp, data=Saliva, shape=factor(hist_group==2, TRUE))
-qplot(size, PIK3CA_amp, data=Saliva, shape=factor(hist_group==3, TRUE))
-qplot(size, PIK3CA_amp, data=Saliva, shape=factor(hist_group==4, TRUE))
-```
 
-### Sex table
-```{r echo=FALSE}
-require("moonBook", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
-require("ztable", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
 sexvar<-c("sex", "age", "location", "hist_group","size" )
-Saliva_table<-Saliva[sexvar]
-# res_sex= mytable(sex~.,data=Saliva_table)
-# ztable(res_sex)
-mytable(sex~.,data=Saliva_table)
+d_t<-d[sexvar]
+sex_table <- mytable(sex~.,data=d_t)
+ztable(sex_table)
 ```
 
 ### Histology table
 ```{r echo=FALSE}
-#res_hist= mytable(hist_group~., data=Saliva_table)
-#ztable(res_hist)
-mytable(hist_group~., data=Saliva_table)
+hist_table <- mytable(hist_group~., data=d_t)
+ztable(hist_table)
 ```
 
 ### Histology based seletion
