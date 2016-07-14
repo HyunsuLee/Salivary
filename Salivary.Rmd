@@ -46,73 +46,60 @@ ztable(mytable(hist_group~., data=d_t))
 
 ### Box plot
 ```{r echo=FALSE}
-Saliva_3_TL <- subset(Saliva_3, telomere_length<40) # excluding outlier data in the telomere length
-qplot(hist_group, size, data = Saliva_3, geom = c("boxplot", "jitter"), fill = hist_group) # plotting the box plot for size
-qplot(hist_group, telomere_length, data=Saliva_3_TL, geom=c("boxplot", "jitter"), fill=hist_group) # plotting the box plot for telomere length
-qplot(hist_group, PIK3CA_amp, data=Saliva_3, geom=c("boxplot", "jitter"), fill=hist_group) # plotting the box plot for PIK3CA expression 
-Saliva_3_MT <- subset(Saliva_3, MT_copynumber<100) # excluding outlier data in the mitochondria copy number
-qplot(hist_group, MT_copynumber, data=Saliva_3_MT, geom=c("boxplot", "jitter"), fill=hist_group) # plotting the box plot for mitochondria copy number
+qplot(hist_group, size, data = d, geom = c("boxplot"), fill = hist_group) # plotting the box plot for size
+qplot(hist_group, telomere_length, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for telomere length
+qplot(hist_group, PIK3CA_amp, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for PIK3CA expression
+d_mt <-subset(d, MT_copynumber <100)
+
+qplot(hist_group, MT_copynumber, data=d_mt, geom=c("boxplot"), fill=hist_group) # plotting the box plot for mitochondria copy number
 ```
 
 ### ANOVA
 Size vs histology
 ```{r echo=FALSE}
-Saliva.size.aov <- aov(size~hist_group, data=Saliva_3)
-summary(Saliva.size.aov)
+d_size_aov <- aov(size~hist_group, data=d)
+summary(d_size_aov)
 ```
 
 Telomere length vs histology
 ```{r echo=FALSE}
-Saliva.tl.aov <- aov(telomere_length~hist_group, data=Saliva_3_TL)
-summary(Saliva.tl.aov)
+d_tl_aov <- aov(telomere_length~hist_group, data=d)
+summary(d_tl_aov)
 ```
 
 PIK3CA expression vs histology
 ```{r echo=FALSE}
-Saliva.PIK.aov <- aov(PIK3CA_amp~hist_group, data=Saliva_3)
-summary(Saliva.PIK.aov)
+d_PIK_aov <- aov(PIK3CA_amp~hist_group, data=d)
+summary(d_PIK_aov)
 ```
 
 mitochondria vs histology
 ```{r echo=FALSE}
-Saliva.MT.aov <- aov(MT_copynumber~hist_group, data=Saliva_3_MT)
-summary(Saliva.MT.aov)
+d_mt_aov <- aov(MT_copynumber~hist_group, data=d_mt)
+summary(d_mt_aov)
 ```
 
 ### ploting size vs telomere length , histology group
 ```{r echo=FALSE}
-qplot(size, telomere_length, data=Saliva_3, shape=hist_group, color = hist_group, ylim = c(0,40))
+qplot(size, telomere_length, data=d, shape=hist_group, color = hist_group, ylim = c(0,120))
 ```
 
 ### ploting size vs PIK3CA expression , histology group
 ```{r echo=FALSE}
-qplot(size, PIK3CA_amp, data=Saliva_3, shape=hist_group, color = hist_group)
+qplot(size, PIK3CA_amp, data=d, shape=hist_group, color = hist_group)
 ```
 
 ### ploting size vs Mitochondria copy number, histology group
 ```{r echo=FALSE}
-qplot(size, MT_copynumber, data=Saliva_3, shape = hist_group, color = hist_group, ylim = c(0,9))
+qplot(size, MT_copynumber, data=d, shape = hist_group, color = hist_group, ylim = c(0,10))
 ```
 
 ### ploting telomere length vs PIK3CA, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, PIK3CA_amp, data=Saliva_3,  shape=hist_group, color = hist_group, xlim = c(0,40))
+qplot(telomere_length, PIK3CA_amp, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120))
 ```
 
 ### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, MT_copynumber, data=Saliva_3,  shape=hist_group, color = hist_group, xlim = c(0,40), ylim = c(0,9))
-```
-
-### ploting telomere length vs mitochondria, histology group
-```{r echo=FALSE}
-qplot(PIK3CA_amp, MT_copynumber, data=Saliva_3, shape = hist_group, color = hist_group, ylim = c(0,9))
-=======
-Saliva_3$hist_group<-factor(Saliva_3$hist_group, levels=c(1,2,3), labels = c("pleomorphic adenoma", "warthin", "carcinoma"))
-Saliva_3_TL <- subset(Saliva_3, telomere_length<40)
-qplot(hist_group, telomere_length, data=Saliva_3_TL, geom=c("boxplot", "jitter"), fill=hist_group)
-qplot(hist_group, PIK3CA_amp, data=Saliva_3, geom=c("boxplot", "jitter"), fill=hist_group)
-Saliva_3_MT <- subset(Saliva_3, MT_copynumber<100)
-qplot(hist_group, MT_copynumber, data=Saliva_3_MT, geom=c("boxplot", "jitter"), fill=hist_group)
->>>>>>> origin/master
+qplot(telomere_length, MT_copynumber, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120), ylim = c(0,9))
 ```
