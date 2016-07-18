@@ -7,6 +7,7 @@ runtime: shiny
 I am writing a paper descring these result at google docs.
 
 
+=======
 ### Data load
 ```{r echo=FALSE}
 d <- read.csv("Saliva_TERT_pik3ca.csv")
@@ -29,11 +30,46 @@ d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic ad
 d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
 ```
 
+### benign tumor histology, gender density bar graph
+```{r, echo=FALSE}
+d_b <- subset(d, hist_group != "carcinoma")
+
+d_b_sub <-d_b[c("sex", "age", "location", "histology", "size")]
+
+reorder_size <- function(x) {
+  factor(x, levels = names(sort(table(x), decreasing = T)))
+}
+
+ggplot(d_b_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
+  scale_x_discrete("histology", 
+                   labels = c("pleomorphic adenoma" ="PA", 
+                              "warthin tumor" = "Warthin", 
+                              "basal cell adenoma" = "BCA",
+                              "epidermal inclusion cyst" = "EIC",
+                              "chronic sclerosing sialadenitis" = "CSS",
+                              "unremarkable" = "N/D")) + 
+  scale_fill_brewer(palette = "Set1") +
+  labs(x ="histolgy", y = "")
+
+
+ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
+  scale_fill_brewer(palette = "Set1")
+
+ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=location)) +
+  scale_fill_brewer(palette = "Set1")
+
+ggplot(d_b_sub, aes(sex, age)) + geom_boxplot(aes(fill=sex)) + 
+  scale_fill_brewer(palette = "Set1")
+
+ggplot(d_b_sub, aes(x = sex,y =size)) + 
+  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(fill = sex)) +
+  scale_fill_brewer(palette = "Set1")
+
+
 
 ### Gender table
 ```{r echo=FALSE}
-sexvar<-c("sex", "age", "location", "hist_group","size" )
-d_t<-d[sexvar]
+d_t<-d[c("sex", "age", "location", "hist_group","size" )]
 
 ztable( mytable(sex~.,data=d_t))
 ```
