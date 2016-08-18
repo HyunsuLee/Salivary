@@ -4,7 +4,9 @@ runtime: shiny
 ---
 # Salivary gland tumor genetics project
 
-I am writing a paper descring these result at google docs.
+~~I am writing a paper descring these result at google docs.~~
+
+Switching to word with endnote, because of the paperfile. 
 
 
 =======
@@ -82,12 +84,43 @@ ztable(mytable(hist_group~., data=d_t))
 
 ### Box plot
 ```{r echo=FALSE}
-qplot(hist_group, size, data = d, geom = c("boxplot"), fill = hist_group) # plotting the box plot for size
-qplot(hist_group, telomere_length, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for telomere length
-qplot(hist_group, PIK3CA_amp, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for PIK3CA expression
-d_mt <-subset(d, MT_copynumber <100)
+# plotting the box plot for telomere length
+ggplot(d, aes(hist_group, telomere_length)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="Telomere length") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
 
-qplot(hist_group, MT_copynumber, data=d_mt, geom=c("boxplot"), fill=hist_group) # plotting the box plot for mitochondria copy number
+ggsave("telomere.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+#PIK3CA
+ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="PIK3CA amplication") + 
+  theme(legend.position="none") +
+  theme_bw()
+
+ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
+
+#mitochondria CNV
+ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="mitochondria copy number") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
+
+ggsave("mito.tiff", units = "in", width = 5, height =4, dpi = 300)
+
+
+d_mt <-subset(d, MT_copynumber <10000)
+
+ggplot(d_mt, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="mitochondria copy number") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
+
+ggsave("mito_sub.tiff", units = "in", width = 5, height =4, dpi = 300)
 ```
 
 ### ANOVA
