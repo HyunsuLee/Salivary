@@ -103,7 +103,8 @@ ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
 ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
 
 #mitochondria CNV
-ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
+d[15:16,16] = NA #exclude outlier
+ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
   scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
   labs(x ="Histology group", y="mitochondria copy number") + 
   theme(legend.position="none") +
@@ -121,6 +122,8 @@ ggplot(d_mt, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
   theme_bw() + scale_y_log10()
 
 ggsave("mito_sub.tiff", units = "in", width = 5, height =4, dpi = 300)
+
+ztable(mytable(hist_group~., data=d))
 ```
 
 ### ANOVA
