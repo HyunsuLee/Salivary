@@ -53,21 +53,28 @@ ggplot(d_b_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
   scale_fill_brewer(palette = "Set1") +
   labs(x ="histolgy", y = "")
 
+ggsave("histology_sex.tiff", units = "in", width = 5, height = 4, dpi =300)
 
 ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
   scale_fill_brewer(palette = "Set1")
 
+ggsave("sex_hist.tiff", units = "in", width = 5, height = 4, dpi =300)
+
 ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=location)) +
   scale_fill_brewer(palette = "Set1")
 
+ggsave("sex_location.tiff", units = "in", width = 5, height = 4, dpi =300)
+
 ggplot(d_b_sub, aes(sex, age)) + geom_boxplot(aes(fill=sex)) + 
   scale_fill_brewer(palette = "Set1")
+
+ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
 
 ggplot(d_b_sub, aes(x = sex,y =size)) + 
   geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(fill = sex)) +
   scale_fill_brewer(palette = "Set1")
 
-
+ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
 
 ### Gender table
 ```{r echo=FALSE}
