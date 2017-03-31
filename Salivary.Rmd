@@ -4,7 +4,9 @@ runtime: html
 ---
 # Salivary gland tumor genetics project
 
-I am writing a paper descring these result at google docs.
+~~I am writing a paper descring these result at google docs.~~
+
+Switching to word with endnote, because of the paperfile. 
 
 
 =======
@@ -41,11 +43,13 @@ d_b <- subset(d, hist_group != "carcinoma")
 
 d_b_sub <-d_b[c("sex", "age", "location", "histology", "size")]
 
+d_a_sub <- d[c("sex", "age", "location", "histology", "size")]
+
 reorder_size <- function(x) {
   factor(x, levels = names(sort(table(x), decreasing = T)))
 }
 
-ggplot(d_b_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
+ggplot(d_a_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
   scale_x_discrete("histology", 
                    labels = c("pleomorphic adenoma" ="PA", 
                               "warthin tumor" = "Warthin", 
@@ -56,21 +60,28 @@ ggplot(d_b_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
   scale_fill_brewer(palette = "Set1") +
   labs(x ="histolgy", y = "")
 
+ggsave("histology_sex.tiff", units = "in", width = 5, height = 4, dpi =300)
 
-ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
+ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
+  scale_fill_brewer(palette = "Spectral")
+
+ggsave("sex_hist.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=location)) +
   scale_fill_brewer(palette = "Set1")
 
-ggplot(d_b_sub, aes(sex)) + geom_bar(aes(fill=location)) +
+ggsave("sex_location.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+ggplot(d_a_sub, aes(sex, age)) + geom_boxplot(aes(fill=sex)) + 
   scale_fill_brewer(palette = "Set1")
 
-ggplot(d_b_sub, aes(sex, age)) + geom_boxplot(aes(fill=sex)) + 
-  scale_fill_brewer(palette = "Set1")
+ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
 
-ggplot(d_b_sub, aes(x = sex,y =size)) + 
+ggplot(d_a_sub, aes(x = sex,y =size)) + 
   geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(fill = sex)) +
   scale_fill_brewer(palette = "Set1")
 
-
+ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
 
 ### Gender table
 ```{r echo=FALSE}
@@ -88,12 +99,46 @@ print(ztable(mytable(hist_group~., data=d_t)))
 
 ### Box plot
 ```{r echo=FALSE}
-qplot(hist_group, size, data = d, geom = c("boxplot"), fill = hist_group) # plotting the box plot for size
-qplot(hist_group, telomere_length, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for telomere length
-qplot(hist_group, PIK3CA_amp, data=d, geom=c("boxplot"), fill=hist_group) # plotting the box plot for PIK3CA expression
-d_mt <-subset(d, MT_copynumber <100)
+# plotting the box plot for telomere length
+ggplot(d, aes(hist_group, telomere_length)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="Telomere length") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
 
-qplot(hist_group, MT_copynumber, data=d_mt, geom=c("boxplot"), fill=hist_group) # plotting the box plot for mitochondria copy number
+ggsave("telomere.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+#PIK3CA
+ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="PIK3CA amplication") + 
+  theme(legend.position="none") +
+  theme_bw()
+
+ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
+
+#mitochondria CNV
+d[15:16,16] = NA #exclude outlier
+ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="mitochondria copy number") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
+
+ggsave("mito.tiff", units = "in", width = 5, height =4, dpi = 300)
+
+
+d_mt <-subset(d, MT_copynumber <10000)
+
+ggplot(d_mt, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="mitochondria copy number") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
+
+ggsave("mito_sub.tiff", units = "in", width = 5, height =4, dpi = 300)
+
+ztable(mytable(hist_group~., data=d))
 ```
 
 ### ANOVA
