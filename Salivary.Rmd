@@ -21,6 +21,7 @@ d <- read.csv("Saliva_TERT_pik3ca.csv")
 require("ggplot2")
 require("moonBook")
 require("ztable")
+require("Rcmdr")
 ```
 
 ### Data summary and manupulation
@@ -163,24 +164,44 @@ summary(d_mt_aov)
 ### ploting size vs telomere length , histology group
 ```{r echo=FALSE}
 qplot(size, telomere_length, data=d, shape=hist_group, color = hist_group, ylim = c(0,120))
+ggsave("TLvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting size vs PIK3CA expression , histology group
 ```{r echo=FALSE}
 qplot(size, PIK3CA_amp, data=d, shape=hist_group, color = hist_group)
+ggsave("PI3vsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting size vs Mitochondria copy number, histology group
 ```{r echo=FALSE}
 qplot(size, MT_copynumber, data=d, shape = hist_group, color = hist_group, ylim = c(0,10))
+ggsave("MTvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting telomere length vs PIK3CA, histology group
 ```{r echo=FALSE}
 qplot(telomere_length, PIK3CA_amp, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120))
+ggsave("TLvsPI3.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
 qplot(telomere_length, MT_copynumber, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120), ylim = c(0,9))
+ggsave("TLvsMT.tiff", units = "in", width = 5, height = 4, dpi =300)
+```
+
+### 3D plotting telomere length vs MT vs PIK3CA, histology group
+```{r echo=FALSE}
+d_3d <- subset(d, telomere_length <120 & MT_copynumber <9)
+z <- d_3d$telomere_length
+y <- d_3d$MT_copynumber
+x <- d_3d$PIK3CA_amp
+scatter3d(x, y, z, surface = FALSE, 
+          groups = d_3d$hist_group, 
+          surface.col = c("red","green", "blue", "purple"),
+          xlab = "PIK3CA ampication", ylab = "MT_copy number", zlab = "telomere length",
+          axis.col = c("black", "black", "black"))
+# require("rgl")          
+# rgl.snapshot(filename = "TL_PI3_MT_3d.png")   그림을 내보기전에 축을적당히 회전시켜야함.
 ```
