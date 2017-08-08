@@ -1,6 +1,6 @@
 ---
 output: html_document
-runtime: shiny
+runtime: html
 ---
 # Salivary gland tumor genetics project
 
@@ -26,11 +26,16 @@ require("Rcmdr")
 
 ### Data summary and manupulation
 ```{r echo=FALSE}
-summary(d)
-
 # naming the histology group
 d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc")) 
 d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
+
+summary(d)
+
+d_m <- subset(d, sex=="male")
+d_f <- subset(d, sex=="female")
+summary(d_m)
+summary(d_f)
 ```
 
 ### benign tumor histology, gender density bar graph
@@ -83,12 +88,13 @@ ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```{r echo=FALSE}
 d_t<-d[c("sex", "age", "location", "hist_group","size" )]
 
-ztable( mytable(sex~.,data=d_t))
+z<-ztable( mytable(sex~.,data=d_t))
+print(z)
 ```
 
 ### Histology table
 ```{r echo=FALSE}
-ztable(mytable(hist_group~., data=d_t))
+print(ztable(mytable(hist_group~., data=d_t)))
 ```
 
 
