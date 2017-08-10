@@ -119,7 +119,9 @@ ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
 ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
 
 #mitochondria CNV
+d$MT_copynumber <- d$MT_copynumber+ 0.01
 d[15:16,16] = NA #exclude outlier
+
 ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
   scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
   labs(x ="Histology group", y="mitochondria copy number") + 
@@ -128,16 +130,6 @@ ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
 
 ggsave("mito.tiff", units = "in", width = 5, height =4, dpi = 300)
 
-
-d_mt <-subset(d, MT_copynumber <10000)
-
-ggplot(d_mt, aes(hist_group, MT_copynumber)) + geom_boxplot(fill = "grey") +
-  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
-  labs(x ="Histology group", y="mitochondria copy number") + 
-  theme(legend.position="none") +
-  theme_bw() + scale_y_log10()
-
-ggsave("mito_sub.tiff", units = "in", width = 5, height =4, dpi = 300)
 
 ztable(mytable(hist_group~., data=d))
 ```
@@ -169,31 +161,46 @@ summary(d_mt_aov)
 
 ### ploting size vs telomere length , histology group
 ```{r echo=FALSE}
-qplot(size, telomere_length, data=d, shape=hist_group, color = hist_group, ylim = c(0,120))
+ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  labs(x ="Size (cm)", y="Telomere length", shape = NULL) + 
+  theme_bw() + scale_y_log10()
+
 ggsave("TLvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting size vs PIK3CA expression , histology group
 ```{r echo=FALSE}
-qplot(size, PIK3CA_amp, data=d, shape=hist_group, color = hist_group)
+ggplot(d, aes(size, PIK3CA_amp )) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  labs(x ="Size", y="PIK3CA amplification", shape = NULL) + 
+  theme_bw()
+
 ggsave("PI3vsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting size vs Mitochondria copy number, histology group
 ```{r echo=FALSE}
-qplot(size, MT_copynumber, data=d, shape = hist_group, color = hist_group, ylim = c(0,10))
+ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  labs(x ="Size", y="Mitochondria copy number", shape = NULL) + 
+  theme_bw() + scale_y_log10()
+
 ggsave("MTvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting telomere length vs PIK3CA, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, PIK3CA_amp, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120))
+ggplot(d, aes(telomere_length, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  labs(x ="Telomere length", y="PIK3CA amplification", shape = NULL) + 
+  theme_bw() + scale_x_log10()
+
 ggsave("TLvsPI3.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
 ### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
-qplot(telomere_length, MT_copynumber, data=d,  shape=hist_group, color = hist_group, xlim = c(0,120), ylim = c(0,9))
+ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  labs(x ="Telomere length", y="PIK3CA amplification", shape = NULL) + 
+  theme_bw() + scale_x_log10() + scale_y_log10()
+
 ggsave("TLvsMT.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
