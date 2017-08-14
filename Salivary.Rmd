@@ -21,7 +21,7 @@ d <- read.csv("Saliva_TERT_pik3ca.csv")
 require("ggplot2")
 require("moonBook")
 require("ztable")
-require("Rcmdr")
+# require("Rcmdr")
 ```
 
 ### Data summary and manupulation
@@ -97,7 +97,14 @@ print(z)
 print(ztable(mytable(hist_group~., data=d_t)))
 ```
 
+### Histology vs size dot plot
+```{r echo=F}
+ggplot(d, aes(x = hist_group,y =size)) + 
+  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(shape = hist_group)) +
+  scale_fill_brewer(palette = "Set1")
 
+ggsave("histVSsize.tiff", units = "in", width = 5, height = 4, dpi =300)
+```
 ### Box plot
 ```{r echo=FALSE}
 # plotting the box plot for telomere length
@@ -198,7 +205,7 @@ ggsave("TLvsPI3.tiff", units = "in", width = 5, height = 4, dpi =300)
 ### ploting telomere length vs mitochondria, histology group
 ```{r echo=FALSE}
 ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  labs(x ="Telomere length", y="PIK3CA amplification", shape = NULL) + 
+  labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
   theme_bw() + scale_x_log10() + scale_y_log10()
 
 ggsave("TLvsMT.tiff", units = "in", width = 5, height = 4, dpi =300)
