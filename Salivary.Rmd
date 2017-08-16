@@ -4,19 +4,22 @@ runtime: html
 ---
 # Salivary gland tumor genetics project
 
-~~I am writing a paper descring these result at google docs.~~
-
-Switching to word with endnote, because of the paperfile. 
-
+Reported Telomere length and TERT promoter mutation in POR already. 
+Preparation for writing new paper dealing with TL vs mtDNA, histopatholgy vs size
 
 =======
 ### Data load
-```{r echo=FALSE}
+```{r, include=FALSE, message=FALSE}
+Sys.setlocale("LC_CTYPE", "ko_KR.UTF-8") ##hangul data process
 d <- read.csv("Saliva_TERT_pik3ca.csv")
+# naming the histology group
+d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("PA", "WT", "CA", "etc")) 
+d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
+d$MT_copynumber <- d$MT_copynumber+ 0.01
+d[15:16,16] = NA #exclude outlier
 ```
 
-
-```{r echo=FALSE}
+```{r, echo=TRUE, message=FALSE}
 # loading librarys
 require("ggplot2")
 require("moonBook")
@@ -25,96 +28,51 @@ require("ztable")
 ```
 
 ### Data summary and manupulation
-```{r echo=FALSE}
-# naming the histology group
-d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("pleomorphic adenoma", "warthin", "carcinoma", "etc")) 
-d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
-
+```{r, echo=TRUE, message=FALSE}
 summary(d)
-
-d_m <- subset(d, sex=="male")
-d_f <- subset(d, sex=="female")
-summary(d_m)
-summary(d_f)
+sd(d$size)
 ```
-
-### benign tumor histology, gender density bar graph
-```{r, echo=FALSE}
-d_b <- subset(d, hist_group != "carcinoma")
-
-d_b_sub <-d_b[c("sex", "age", "location", "histology", "size")]
-
-d_a_sub <- d[c("sex", "age", "location", "histology", "size")]
-
-reorder_size <- function(x) {
-  factor(x, levels = names(sort(table(x), decreasing = T)))
-}
-
-ggplot(d_a_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
-  scale_x_discrete("histology", 
-                   labels = c("pleomorphic adenoma" ="PA", 
-                              "warthin tumor" = "Warthin", 
-                              "basal cell adenoma" = "BCA",
-                              "epidermal inclusion cyst" = "EIC",
-                              "chronic sclerosing sialadenitis" = "CSS",
-                              "unremarkable" = "N/D")) + 
-  scale_fill_brewer(palette = "Set1") +
-  labs(x ="histolgy", y = "")
-
-ggsave("histology_sex.tiff", units = "in", width = 5, height = 4, dpi =300)
-
-ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
-  scale_fill_brewer(palette = "Spectral")
-
-ggsave("sex_hist.tiff", units = "in", width = 5, height = 4, dpi =300)
-
-ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=location)) +
-  scale_fill_brewer(palette = "Set1")
-
-ggsave("sex_location.tiff", units = "in", width = 5, height = 4, dpi =300)
-
-ggplot(d_a_sub, aes(sex, age)) + geom_boxplot(aes(fill=sex)) + 
-  scale_fill_brewer(palette = "Set1")
-
-ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
-
-ggplot(d_a_sub, aes(x = sex,y =size)) + 
-  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(fill = sex)) +
-  scale_fill_brewer(palette = "Set1")
-
-ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
+Male 19, female 17. 
+Parotid gland 30, Submandibular gland 6.
+PA 19, WT 8, CA 5, etc 4.
+size mean 3 (+-sd: 1.13)cm
 
 ### Gender table
-```{r echo=FALSE}
-d_t<-d[c("sex", "age", "location", "hist_group","size" )]
+```{r, echo=TRUE, message=FALSE}
+d_gender_t<-d[c("sex", "age", "location", "hist_group","size" )]
 
-z<-ztable( mytable(sex~.,data=d_t))
-print(z)
+print(ztable(mytable(sex~.,data=d_gender_t)))
 ```
-
 ### Histology table
-```{r echo=FALSE}
-print(ztable(mytable(hist_group~., data=d_t)))
+```{r, echo=TRUE, message=FALSE}
+d_hist_t<-d[c("age", "location", "hist_group","size" )]
+print(ztable(mytable(hist_group~., data=d_hist_t)))
+# summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 
-### Histology vs size dot plot
-```{r echo=F}
-ggplot(d, aes(x = hist_group,y =size)) + 
-  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(shape = hist_group)) +
-  scale_fill_brewer(palette = "Set1")
+### Oncogene table
+```{r, echo=TRUE, message=FALSE}
+d_onco_t<-d[c("hist_group", "MT_copynumber", "PIK3CA_amp")] # telomere_length ommited due to POR letter
+print(ztable(mytable(hist_group~., data=d_onco_t)))
 
-ggsave("histVSsize.tiff", units = "in", width = 5, height = 4, dpi =300)
+#ANOVA has same result chi-squire table analysis
+#summary(aov(telomere_length~hist_group, data=d))
+#summary(aov(PIK3CA_amp~hist_group, data=d))
+#summary(aov(MT_copynumber~hist_group, data=d))
 ```
-### Box plot
-```{r echo=FALSE}
-# plotting the box plot for telomere length
-ggplot(d, aes(hist_group, telomere_length)) + geom_boxplot(fill = "grey") +
-  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
-  labs(x ="Histology group", y="Telomere length") + 
-  theme(legend.position="none") +
-  theme_bw() + scale_y_log10()
 
-ggsave("telomere.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+### Box plot for ongene in salivary gland.
+```{r echo=FALSE}
+# plotting the box plot for telomere length. POR letter published
+# omit in the new paper.
+#ggplot(d, aes(hist_group, telomere_length)) + geom_boxplot(fill = "grey") +
+#  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+#  labs(x ="Histology group", y="Telomere length") + 
+#  theme(legend.position="none") +
+#  theme_bw() + scale_y_log10()
+#ggsave("telomere.tiff", units = "in", width = 5, height = 4, dpi =300) 
+
 
 #PIK3CA
 ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
@@ -126,9 +84,6 @@ ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
 ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
 
 #mitochondria CNV
-d$MT_copynumber <- d$MT_copynumber+ 0.01
-d[15:16,16] = NA #exclude outlier
-
 ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
   scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
   labs(x ="Histology group", y="mitochondria copy number") + 
@@ -136,36 +91,9 @@ ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
   theme_bw() + scale_y_log10()
 
 ggsave("mito.tiff", units = "in", width = 5, height =4, dpi = 300)
-
-
-ztable(mytable(hist_group~., data=d))
 ```
 
-### ANOVA
-Size vs histology
-```{r echo=FALSE}
-d_size_aov <- aov(size~hist_group, data=d)
-summary(d_size_aov)
-```
-
-Telomere length vs histology
-```{r echo=FALSE}
-d_tl_aov <- aov(telomere_length~hist_group, data=d)
-summary(d_tl_aov)
-```
-
-PIK3CA expression vs histology
-```{r echo=FALSE}
-d_PIK_aov <- aov(PIK3CA_amp~hist_group, data=d)
-summary(d_PIK_aov)
-```
-
-mitochondria vs histology
-```{r echo=FALSE}
-d_mt_aov <- aov(MT_copynumber~hist_group, data=d_mt)
-summary(d_mt_aov)
-```
-
+start here!
 ### ploting size vs telomere length , histology group
 ```{r echo=FALSE}
 ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
@@ -225,3 +153,75 @@ scatter3d(x, y, z, surface = FALSE,
 # require("rgl")          
 # rgl.snapshot(filename = "TL_PI3_MT_3d.png")   그림을 내보기전에 축을적당히 회전시켜야함.
 ```
+
+
+### drawing box plot sex vs age. omit.
+```{r, echo=TRUE, message=FALSE}
+'''
+ggplot(d, aes(sex, age)) + geom_boxplot(aes(fill=sex)) +
+  theme_bw() + scale_fill_brewer(palette = "Greys") + 
+  theme(legend.position="none")
+  #+  scale_fill_brewer(palette = "Set1")
+
+ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
+'''
+```
+
+### benign tumor histology, gender density bar graph. omit.
+```{r, echo=TRUE, message=FALSE}
+'''
+d_b <- subset(d, hist_group != "carcinoma")
+
+d_b_sub <-d_b[c("sex", "age", "location", "histology", "size")]
+
+d_a_sub <- d[c("sex", "age", "location", "histology", "size")]
+
+reorder_size <- function(x) {
+  factor(x, levels = names(sort(table(x), decreasing = T)))
+}
+
+ggplot(d_a_sub, aes(reorder_size(histology))) + geom_bar(aes(fill=sex)) +
+  scale_x_discrete("histology", 
+                   labels = c("pleomorphic adenoma" ="PA", 
+                              "warthin tumor" = "Warthin", 
+                              "basal cell adenoma" = "BCA",
+                              "epidermal inclusion cyst" = "EIC",
+                              "chronic sclerosing sialadenitis" = "CSS",
+                              "unremarkable" = "N/D")) + 
+  scale_fill_brewer(palette = "Set1") +
+  labs(x ="histolgy", y = "")
+
+ggsave("histology_sex.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=reorder_size(histology))) +
+  scale_fill_brewer(palette = "Spectral")
+
+ggsave("sex_hist.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+ggplot(d_a_sub, aes(sex)) + geom_bar(aes(fill=location)) +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave("sex_location.tiff", units = "in", width = 5, height = 4, dpi =300)
+
+ggplot(d_a_sub, aes(x = sex,y =size)) + 
+  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(fill = sex)) +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
+'''
+```
+
+
+
+
+### Histology vs size dot plot. omit.
+```{r echo=F}
+'''
+ggplot(d, aes(x = hist_group,y =size)) + 
+  geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(shape = hist_group)) +
+  scale_fill_brewer(palette = "Set1")
+
+ggsave("histVSsize.tiff", units = "in", width = 5, height = 4, dpi =300)
+'''
+```
+
