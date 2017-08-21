@@ -104,23 +104,23 @@ ggsave("Fig1_h.tiff", figure1_hori, units = "in", width = 10, height = 4, dpi = 
 
 ###plotting size vs oncogene, faceting plot
 ```{r, echo=TRUE, message=FALSE}
-fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
+fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
   facet_wrap(~BenignCA) + 
   labs(x = NULL , y="Telomere length", shape = NULL) + 
   theme_bw()
 
 
-fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
+fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   facet_wrap(~BenignCA) +
   labs(x = NULL , y="PIK3CA amplification", shape = NULL) + 
   theme_bw()
 
-fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
+fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   facet_wrap(~BenignCA) +
   labs(x ="Size (cm)", y="Mitochondria copy number", shape = NULL) + 
   theme_bw() + scale_y_log10()
 
-figure2 <- arrangeGrob(fig2_a, fig2_b, fig2c, nrow = 3)
+figure2 <- arrangeGrob(fig2_a, fig2_b, fig2_c, nrow = 3)
 
 ggsave("Fig2.tiff", figure2, units = "in", width = 5, height = 8, dpi = 300)
 ```
