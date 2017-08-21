@@ -17,6 +17,9 @@ d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("PA", "WT", "CA
 d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
 d$MT_copynumber <- d$MT_copynumber+ 0.01
 d[15:16,16] = NA #exclude outlier
+# data tagging for facetting Benign vs CA
+BenignCA <- factor(d$hist_group =="CA", levels=c(F,T), labels = c("Benign", "CA"))
+d<-cbind(d, BenignCA)
 ```
 
 ```{r, echo=TRUE, message=FALSE}
@@ -24,6 +27,7 @@ d[15:16,16] = NA #exclude outlier
 require("ggplot2")
 require("moonBook")
 require("ztable")
+require("gridExtra")
 # require("Rcmdr")
 ```
 
@@ -41,19 +45,19 @@ size mean 3 (+-sd: 1.13)cm
 ```{r, echo=TRUE, message=FALSE}
 d_gender_t<-d[c("sex", "age", "location", "hist_group","size" )]
 
-print(ztable(mytable(sex~.,data=d_gender_t)))
+print(ztable(mytable(sex~.,data=d_gender_t))) #table_1  gender table
 ```
 ### Histology table
 ```{r, echo=TRUE, message=FALSE}
 d_hist_t<-d[c("age", "location", "hist_group","size" )]
-print(ztable(mytable(hist_group~., data=d_hist_t)))
+print(ztable(mytable(hist_group~., data=d_hist_t))) #table_2 histology table
 # summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 
 ### Oncogene table
 ```{r, echo=TRUE, message=FALSE}
 d_onco_t<-d[c("hist_group", "MT_copynumber", "PIK3CA_amp")] # telomere_length ommited due to POR letter
-print(ztable(mytable(hist_group~., data=d_onco_t)))
+print(ztable(mytable(hist_group~., data=d_onco_t))) #table_3 oncogene table
 
 #ANOVA has same result chi-squire table analysis
 #summary(aov(telomere_length~hist_group, data=d))
@@ -63,7 +67,7 @@ print(ztable(mytable(hist_group~., data=d_onco_t)))
 
 
 ### Box plot for ongene in salivary gland.
-```{r echo=FALSE}
+```{r, echo=TRUE, message=FALSE}
 # plotting the box plot for telomere length. POR letter published
 # omit in the new paper.
 #ggplot(d, aes(hist_group, telomere_length)) + geom_boxplot(fill = "grey") +
@@ -75,72 +79,159 @@ print(ztable(mytable(hist_group~., data=d_onco_t)))
 
 
 #PIK3CA
-ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
+fig1_a <- ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
   scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
   labs(x ="Histology group", y="PIK3CA amplication") + 
   theme(legend.position="none") +
   theme_bw()
 
-ggsave("pik3ca.tiff", units = "in", width = 5, height = 4, dpi = 300)
+# ggsave("Fig1_a.tiff", units = "in", width = 5, height = 4, dpi = 300)
 
 #mitochondria CNV
-ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
+fig1_b <- ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
   scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
   labs(x ="Histology group", y="mitochondria copy number") + 
   theme(legend.position="none") +
   theme_bw() + scale_y_log10()
 
-ggsave("mito.tiff", units = "in", width = 5, height =4, dpi = 300)
+figure1_vert <- arrangeGrob(fig1_a, fig1_b, nrow = 2)
+figure1_hori <- arrangeGrob(fig1_a, fig1_b, ncol = 2)
+
+ggsave("Fig1_v.tiff", figure1_vert, units = "in", width = 5, height = 8, dpi = 300)
+ggsave("Fig1_h.tiff", figure1_hori, units = "in", width = 10, height = 4, dpi = 300)
 ```
 
-start here!
-### ploting size vs telomere length , histology group
-```{r echo=FALSE}
-ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  labs(x ="Size (cm)", y="Telomere length", shape = NULL) + 
-  theme_bw() + scale_y_log10()
 
-ggsave("TLvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
-```
-
-### ploting size vs PIK3CA expression , histology group
-```{r echo=FALSE}
-ggplot(d, aes(size, PIK3CA_amp )) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  labs(x ="Size", y="PIK3CA amplification", shape = NULL) + 
+###plotting size vs oncogene, faceting plot
+```{r, echo=TRUE, message=FALSE}
+fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
+  facet_wrap(~BenignCA) + 
+  labs(x = NULL , y="Telomere length", shape = NULL) + 
   theme_bw()
 
-ggsave("PI3vsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
-```
 
-### ploting size vs Mitochondria copy number, histology group
-```{r echo=FALSE}
-ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  labs(x ="Size", y="Mitochondria copy number", shape = NULL) + 
+fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
+  facet_wrap(~BenignCA) +
+  labs(x = NULL , y="PIK3CA amplification", shape = NULL) + 
+  theme_bw()
+
+fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
+  facet_wrap(~BenignCA) +
+  labs(x ="Size (cm)", y="Mitochondria copy number", shape = NULL) + 
   theme_bw() + scale_y_log10()
 
-ggsave("MTvsSize.tiff", units = "in", width = 5, height = 4, dpi =300)
+figure2 <- arrangeGrob(fig2_a, fig2_b, fig2c, nrow = 3)
+
+ggsave("Fig2.tiff", figure2, units = "in", width = 5, height = 8, dpi = 300)
 ```
 
+
+## Linear regression for oncogene vs size.
+```{r, echo=TRUE, message=FALSE}
+# Benign vs carcinoma subsetting for linear regression
+d_benign <- subset(d, hist_group != "CA")
+d_CA <- subset(d, hist_group == "CA")
+
+onc_size_be.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_benign)
+summary(onc_size_be.lm)
+onc_size_CA.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_CA)
+summary(onc_size_CA.lm)
+```
+non-significant.
+benign 
+tl vs size p = 0.0522
+pik3 vs size p = 0.8212
+MT_CN vs size p = 0.6074
+CA not available due to low number.
+
+## plotting age vs telomere_length, facetting plot
+```{r, echo=TRUE, message=FALSE}
+ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
+  facet_wrap(~BenignCA) + 
+  labs(x ="age", y="Telomere length", shape = NULL) + 
+  theme_bw()
+ggsave("Fig3.tiff", units = "in", width = 5, height = 3, dpi = 300)
+```
+
+## Linear regression for oncogene vs age.
+```{r, echo=TRUE, message=FALSE}
+onc_age_be.lm <- lm(age ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_benign)
+summary(onc_age_be.lm)
+onc_age_CA.lm <- lm(age ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_CA)
+summary(onc_age_CA.lm)
+```
+non-significant
+benign
+tl vs age p = 0.259
+CA not available due to low number. 
+
+
+### plotting telomere length vs MT_copynumber, histology group
+```{r, echo=TRUE, message=FALSE}
+
+ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  stat_smooth(method = "lm", col = "black") +
+  facet_wrap(~BenignCA) + 
+  labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
+  theme_bw() + scale_x_log10() + scale_y_log10()
+
+ggsave("Fig4.tiff", units = "in", width = 5, height = 4, dpi =300)
+```
+
+## Linear regression for telomere vs mt_copynumber
+```{r, echo=TRUE, message=FALSE}
+tl_mt_be.lm <- lm(telomere_length ~ MT_copynumber, data = d_benign)
+summary(tl_mt_be.lm)
+tl_mt_CA.lm <- lm(telomere_length ~ MT_copynumber, data = d_CA)
+summary(tl_mt_CA.lm)
+```
+non-significant.
+benign p = 0.4345
+CA p = 0.838
+
+
+#below here, analyzed but not including for paper
 ### ploting telomere length vs PIK3CA, histology group
-```{r echo=FALSE}
+```{r, echo=TRUE, message=FALSE}
 ggplot(d, aes(telomere_length, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  stat_smooth(method = "lm", col = "black") +
+  facet_wrap(~BenignCA) + 
   labs(x ="Telomere length", y="PIK3CA amplification", shape = NULL) + 
   theme_bw() + scale_x_log10()
 
 ggsave("TLvsPI3.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
 
-### ploting telomere length vs mitochondria, histology group
-```{r echo=FALSE}
-ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
-  theme_bw() + scale_x_log10() + scale_y_log10()
 
-ggsave("TLvsMT.tiff", units = "in", width = 5, height = 4, dpi =300)
+### plotting pik3ca vs mt_copynumber
+```{r, echo=TRUE, message=FALSE}
+ggplot(d, aes(PIK3CA_amp, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  stat_smooth(method = "lm", col = "black") +
+  facet_wrap(~BenignCA) + 
+  labs(x ="PIK3CA amplification", y="Mitochondria copy number", shape = NULL) + 
+  theme_bw() + scale_y_log10()
+
+ggsave("PI3vsMT.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
+
+## linear regression for other oncogene.
+```{r, echo=TRUE, message=FALSE}
+tl_pik_be.lm <- lm(telomere_length ~ PIK3CA_amp, data = d_benign)
+summary(tl_pik_be.lm)
+tl_pik_CA.lm <- lm(telomere_length ~ PIK3CA_amp, data = d_CA)
+summary(tl_pik_CA.lm)
+
+pik_mt_be.lm <- lm(PIK3CA_amp ~ MT_copynumber, data = d_benign)
+summary(pik_mt_be.lm)
+pik_mt_CA.lm <- lm(PIK3CA_amp ~ MT_copynumber, data = d_CA)
+summary(pik_mt_CA.lm)
+
+```
+non-significant.
 
 ### 3D plotting telomere length vs MT vs PIK3CA, histology group
 ```{r echo=FALSE}
+'
 d_3d <- subset(d, telomere_length <120 & MT_copynumber <9)
 z <- d_3d$telomere_length
 y <- d_3d$MT_copynumber
@@ -152,24 +243,25 @@ scatter3d(x, y, z, surface = FALSE,
           axis.col = c("black", "black", "black"))
 # require("rgl")          
 # rgl.snapshot(filename = "TL_PI3_MT_3d.png")   그림을 내보기전에 축을적당히 회전시켜야함.
+'
 ```
 
 
 ### drawing box plot sex vs age. omit.
 ```{r, echo=TRUE, message=FALSE}
-'''
+'
 ggplot(d, aes(sex, age)) + geom_boxplot(aes(fill=sex)) +
   theme_bw() + scale_fill_brewer(palette = "Greys") + 
   theme(legend.position="none")
   #+  scale_fill_brewer(palette = "Set1")
 
 ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
-'''
+'
 ```
 
 ### benign tumor histology, gender density bar graph. omit.
 ```{r, echo=TRUE, message=FALSE}
-'''
+'
 d_b <- subset(d, hist_group != "carcinoma")
 
 d_b_sub <-d_b[c("sex", "age", "location", "histology", "size")]
@@ -208,7 +300,7 @@ ggplot(d_a_sub, aes(x = sex,y =size)) +
   scale_fill_brewer(palette = "Set1")
 
 ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
-'''
+'
 ```
 
 
