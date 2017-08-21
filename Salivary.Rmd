@@ -104,11 +104,11 @@ ggsave("Fig1_h.tiff", figure1_hori, units = "in", width = 10, height = 4, dpi = 
 
 ###plotting size vs oncogene, faceting plot
 ```{r, echo=TRUE, message=FALSE}
-fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
   facet_wrap(~BenignCA) + 
   labs(x = NULL , y="Telomere length", shape = NULL) + 
-  theme_bw()
-
+  theme_bw() + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
 fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   facet_wrap(~BenignCA) +
@@ -149,7 +149,8 @@ CA not available due to low number.
 ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
   facet_wrap(~BenignCA) + 
   labs(x ="age", y="Telomere length", shape = NULL) + 
-  theme_bw()
+  theme_bw() + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 ggsave("Fig3.tiff", units = "in", width = 5, height = 3, dpi = 300)
 ```
 
@@ -169,11 +170,13 @@ CA not available due to low number.
 ### plotting telomere length vs MT_copynumber, histology group
 ```{r, echo=TRUE, message=FALSE}
 
-ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
   stat_smooth(method = "lm", col = "black") +
   facet_wrap(~BenignCA) + 
   labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
-  theme_bw() + scale_x_log10() + scale_y_log10()
+  theme_bw() + scale_x_log10() + scale_y_log10() + 
+  theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
 ggsave("Fig4.tiff", units = "in", width = 5, height = 4, dpi =300)
 ```
