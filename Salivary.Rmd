@@ -178,7 +178,7 @@ ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(h
   theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
   legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
-ggsave("Fig4.tiff", units = "in", width = 5, height = 4, dpi =300)
+ggsave("Fig4.tiff", units = "in", width = 5, height = 3, dpi =300)
 ```
 
 ## Linear regression for telomere vs mt_copynumber
