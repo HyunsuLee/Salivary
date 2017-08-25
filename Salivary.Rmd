@@ -144,6 +144,23 @@ pik3 vs size p = 0.8212
 MT_CN vs size p = 0.6074
 CA not available due to low number.
 
+### size correlation spearman test in benign
+```{r, echo=TRUE, message=FALSE}
+cor.test(d_benign$size,d_benign$telomere_length ,method="spearman")
+cor.test(d_CA$size,d_CA$telomere_length ,method="spearman")
+
+cor.test(d_benign$size,d_benign$PIK3CA_amp ,method="spearman")
+cor.test(d_CA$size,d_CA$PIK3CA_amp ,method="spearman")
+
+cor.test(d_benign$size,d_benign$MT_copynumber ,method="spearman")
+cor.test(d_CA$size,d_CA$MT_copynumber ,method="spearman")
+```
+non significant 
+TL benign 0.08754 CA 0.95
+pik3ca benign 0.5761 CA 0.417
+mtDNA benign 0.759 CA 1
+
+
 ## plotting age vs telomere_length, facetting plot
 ```{r, echo=TRUE, message=FALSE}
 ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
@@ -166,6 +183,14 @@ benign
 tl vs age p = 0.259
 CA not available due to low number. 
 
+### age correlation spearman test in benign and malignant.
+```{r, echo=TRUE, message=FALSE}
+cor.test(d_benign$age,d_benign$telomere_length ,method="spearman")
+cor.test(d_CA$age,d_CA$telomere_length ,method="spearman")
+```
+non-significant
+benign p = 0.4039
+CA p = 0.35
 
 ### plotting telomere length vs MT_copynumber, histology group
 ```{r, echo=TRUE, message=FALSE}
@@ -192,6 +217,14 @@ non-significant.
 benign p = 0.4345
 CA p = 0.838
 
+### tl vs mt correlation spearman test in benign and malignant.
+```{r, echo=TRUE, message=FALSE}
+cor.test(d_benign$telomere_length,d_benign$MT_copynumber ,method="spearman")
+cor.test(d_CA$telomere_length,d_CA$MT_copynumber ,method="spearman")
+```
+non-significant.
+benign p = 0.676
+CA p = 0.95
 
 #below here, analyzed but not including for paper
 ### ploting telomere length vs PIK3CA, histology group
