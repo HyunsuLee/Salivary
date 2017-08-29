@@ -43,22 +43,22 @@ size mean 3 (+-sd: 1.13)cm
 
 ### Gender table
 ```{r, echo=TRUE, message=FALSE}
-d_gender_t<-d[c("sex", "age", "location", "hist_group","size" )]
+d_table<-d[c("sex", "age", "location", "hist_group","size" )]
 
-print(ztable(mytable(sex~.,data=d_gender_t))) #table_1  gender table
+print(ztable(mytable(sex~.,data=d_table))) #table_1  gender table
+```
+### location table
+```{r, echo=TRUE, message=FALSE}
+print(ztable(mytable(location~age + hist_group + size, data = d_table))) #table_2 location table
 ```
 
 ### Histology table
 ```{r, echo=TRUE, message=FALSE}
-d_hist_t<-d[c("age", "location", "hist_group","size" )]
-print(ztable(mytable(hist_group~., data=d_hist_t))) #table_2 histology table
+print(ztable(mytable(hist_group~age + size, data=d_table))) #table_3 histology table
 # summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 
-### location table
-```{r, echo=TRUE, message=FALSE}
-print(ztable(mytable(location~., data = d_gender_t)))
-```
+
 
 ### Oncogene table
 ```{r, echo=TRUE, message=FALSE}
