@@ -40,6 +40,7 @@ Male 19, female 17.
 Parotid gland 30, Submandibular gland 6.
 PA 19, WT 8, CA 5, etc 4.
 size mean 3 (+-sd: 1.13)cm
+benign 31/36(86.1%), malig 5/36(13.9%)
 
 ### Gender table
 ```{r, echo=TRUE, message=FALSE}
@@ -52,14 +53,17 @@ print(ztable(mytable(sex~.,data=d_table))) #table_1  gender table
 print(ztable(mytable(location~age + hist_group + size, data = d_table))) #table_2 location table
 ```
 
-### Histology table
+### Histology_grouping table
 ```{r, echo=TRUE, message=FALSE}
 print(ztable(mytable(hist_group~age + size, data=d_table))) #table_3 histology table
 # summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 
-
-
+### histology all table.
+```{r, echo=TRUE, message=FALSE}
+print(ztable(mytable(sex~histology, data=d_CA))) #table_3 histology table
+# summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
+```
 ### Oncogene table
 ```{r, echo=TRUE, message=FALSE}
 d_onco_t<-d[c("hist_group", "MT_copynumber", "PIK3CA_amp")] # telomere_length ommited due to POR letter
