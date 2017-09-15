@@ -48,9 +48,34 @@ d_table<-d[c("sex", "age", "location", "hist_group","size" )]
 
 print(ztable(mytable(sex~.,data=d_table))) #table_1  gender table
 ```
+### gender age compare with MW test
+```{r, echo=TRUE, message=FALSE}
+male_age <- subset(d$age, d$sex =="male")
+female_age <- subset(d$age, d$sex == "female")
+wilcox.test(male_age, female_age)
+```
+### gender size compare with MW test
+```{r, echo=TRUE, message=FALSE}
+male_size <- subset(d$size, d$sex =="male")
+female_size <- subset(d$size, d$sex == "female")
+wilcox.test(male_size, female_size)
+```
+
 ### location table
 ```{r, echo=TRUE, message=FALSE}
 print(ztable(mytable(location~age + hist_group + size, data = d_table))) #table_2 location table
+```
+### location age compare with MW test
+```{r, echo=TRUE, message=FALSE}
+paro_age <- subset(d$age, d$location_group == 1)
+subman_age <- subset(d$age, d$location_group == 2)
+wilcox.test(paro_age, subman_age)
+```
+### location size compare with MW test
+```{r, echo=TRUE, message=FALSE}
+paro_size <- subset(d$size, d$location_group == 1)
+subman_size <- subset(d$size, d$location_group == 2)
+wilcox.test(paro_size, subman_size)
 ```
 
 ### Histology_grouping table
