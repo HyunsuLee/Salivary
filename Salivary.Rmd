@@ -13,13 +13,14 @@ Preparation for writing new paper dealing with TL vs mtDNA, histopatholgy vs siz
 Sys.setlocale("LC_CTYPE", "ko_KR.UTF-8") ##hangul data process
 d <- read.csv("Saliva_TERT_pik3ca.csv")
 # naming the histology group
-d$hist_group<-factor(d$hist_group, levels=c(1,2,3,4), labels = c("PA", "WT", "CA", "etc")) 
+d$hist_group<-factor(d$hist_group, levels=c(1,2,3), labels = c("PA", "WT", "CA")) # to exclude "etc" group in latter(heejin's opinion)
 d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
 d$MT_copynumber <- d$MT_copynumber+ 0.01
 d[15:16,16] = NA #exclude outlier
 # data tagging for facetting Benign vs CA
 BenignCA <- factor(d$hist_group =="CA", levels=c(F,T), labels = c("Benign", "CA"))
 d<-cbind(d, BenignCA)
+
 ```
 
 ```{r, echo=TRUE, message=FALSE}
@@ -30,6 +31,14 @@ require("ztable")
 require("gridExtra")
 # require("Rcmdr")
 ```
+
+## data subsetting according to heejin's opinion
+```{r, echo=TRUE, message=FALSE}
+d <- subset(d, d$hist_group!="etc")
+
+```
+
+
 
 ### Data summary and manupulation
 ```{r, echo=TRUE, message=FALSE}
@@ -45,7 +54,7 @@ benign 31/36(86.1%), malig 5/36(13.9%)
 ### Gender table
 ```{r, echo=TRUE, message=FALSE}
 d_table<-d[c("sex", "age", "location", "hist_group","size" )]
-
+print(ztable(mytable(hist_group~.,data=d_table)))
 print(ztable(mytable(sex~.,data=d_table))) #table_1  gender table
 ```
 ### gender age compare with MW test
