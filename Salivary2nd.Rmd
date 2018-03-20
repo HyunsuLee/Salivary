@@ -1,0 +1,183 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+# Salivary gland tumor genetics project
+
+Reported Telomere length and TERT promoter mutation in POR already. 
+Preparation for writing new paper dealing with TL vs mtDNA, histopatholgy vs size
+
+
+## Data load & process
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+Sys.setlocale("LC_CTYPE", "ko_KR.UTF-8") ##hangul data process
+d <- read.csv("Saliva_TERT_pik3ca.csv")
+# naming the histology group
+d$hist_group<-factor(d$hist_group, levels=c(1,2,3), labels = c("PA", "WT", "CA")) # to exclude "etc" group in latter(heejin's opinion)
+d <- subset(d, d$hist_group!="etc")
+d$sex <- factor(d$sex, levels=c(1,2), labels = c("male", "female")) 
+d$MT_copynumber <- d$MT_copynumber + 0.01 #for log scaling
+d[15:16,16] = NA #exclude outlier
+## Linear regression for oncogene vs size.
+
+# Benign vs carcinoma subsetting for linear regression
+d_PA <- subset(d, hist_group == "PA")
+d_WT <- subset(d, hist_group == "WT")
+d_CA <- subset(d, hist_group == "CA")
+```
+
+## Loading librarys
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+require("ggplot2")
+require("moonBook")
+require("ztable")
+require("gridExtra")
+```
+
+## DATA summary
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+summary(d$sex)
+summary(factor(d$location))
+summary(d$hist_group)
+19/32*100
+8/32*100
+5/32*100
+mean(d$size) 
+sd(d$size)
+```
+
+## Table 1
+### Histology_grouping table
+```{r, echo=TRUE, warning=FALSE}
+d_table<-d[c("sex", "age", "location", "hist_group","size" )]
+mytable(hist_group~., data=d_table)
+```
+
+## Figure 1(use vertical arrange)
+### Box plot for ongene in salivary gland.
+```{r, echo=TRUE, fig.height=8, fig.width=5, message=FALSE, warning=FALSE}
+#PIK3CA
+fig1_a <- ggplot(d, aes(hist_group, PIK3CA_amp)) + geom_boxplot(fill = "grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="PIK3CA amplication") + 
+  theme(legend.position="none") +
+  theme_bw()
+
+#mitochondria CNV
+fig1_b <- ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") +
+  scale_x_discrete(labels = c ("PA","WT","CA","etc")) + 
+  labs(x ="Histology group", y="mitochondria copy number") + 
+  theme(legend.position="none") +
+  theme_bw() + scale_y_log10()
+
+figure1_vert <- arrangeGrob(fig1_a, fig1_b, nrow = 2)
+plot(figure1_vert)
+# ggsave("Figure_1.tiff", figure1_vert, units = "in", width = 5, height = 8, dpi = 300)
+```
+
+## Figure 2
+###plotting size vs oncogene, faceting plot
+```{r, echo=TRUE, fig.height=6.5, fig.width=5, message=FALSE, warning=FALSE}
+fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group) + 
+  labs(x = NULL , y="Telomere length", shape = NULL) + 
+  theme_bw() # + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  # legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  facet_wrap(~hist_group) +
+  labs(x = NULL , y="PIK3CA amplification", shape = NULL) + 
+  theme_bw()
+
+fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  facet_wrap(~hist_group) +
+  labs(x ="Size (cm)", y="Mitochondria copy number", shape = NULL) + 
+  theme_bw() + scale_y_log10()
+
+figure2 <- arrangeGrob(fig2_a, fig2_b, fig2_c, nrow = 3)
+plot(figure2)
+# ggsave("Figure_2.tiff", figure2, units = "in", width = 5, height = 6.5, dpi = 300)
+```
+
+## Figure 2 correlation (Significant!!)
+### size correlation spearman test in benign
+```{r, echo=TRUE, message=TRUE, warning=FALSE}
+cor.test(d_PA$size, d_PA$telomere_length, method = "spearman")
+cor.test(d_WT$size, d_WT$telomere_length, method = "spearman")
+cor.test(d_CA$size,d_CA$telomere_length, method="spearman")
+
+cor.test(d_PA$size, d_PA$PIK3CA_amp, method = "spearman")
+cor.test(d_WT$size, d_WT$PIK3CA_amp, method = "spearman")
+cor.test(d_CA$size,d_CA$PIK3CA_amp, method="spearman")
+
+cor.test(d_PA$size, d_PA$MT_copynumber, method = "spearman")
+cor.test(d_WT$size, d_WT$MT_copynumber, method = "spearman")
+cor.test(d_CA$size,d_CA$MT_copynumber, method="spearman")
+```
+
+## Figure 3
+### plotting age vs telomere_length, oncogenes, facetting plot
+```{r, echo=TRUE, fig.height=6.5, fig.width=5, message=FALSE, warning=FALSE}
+fig3_a <- ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
+  labs(x ="age", y="Telomere length", shape = NULL) + 
+  theme_bw() #+ theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+fig3_b <- ggplot(d, aes(age, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
+  labs(x ="age", y="PIK3CA", shape = NULL) + 
+  theme_bw() #+ theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+fig3_c <- ggplot(d, aes(age, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
+  labs(x ="age", y="mitochondria", shape = NULL) + scale_y_log10() +
+  theme_bw() # + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  # legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+figure3 <- arrangeGrob(fig3_a, fig3_b, fig3_c, nrow = 3)
+plot(figure3)
+# ggsave("Figure_3.tiff", figure3, units = "in", width = 5, height = 6.5, dpi = 300)
+```
+
+### age correlation spearman test in benign and malignant.
+```{r, echo=TRUE, message=FALSE}
+cor.test(d_PA$age, d_PA$telomere_length, method = "spearman")
+cor.test(d_WT$age, d_WT$telomere_length, method = "spearman")
+cor.test(d_CA$age, d_CA$telomere_length, method="spearman")
+
+cor.test(d_PA$age, d_PA$PIK3CA_amp, method = "spearman")
+cor.test(d_WT$age, d_WT$PIK3CA_amp, method = "spearman")
+cor.test(d_CA$age, d_CA$PIK3CA_amp ,method="spearman")
+
+cor.test(d_PA$age, d_PA$MT_copynumber, method = "spearman")
+cor.test(d_WT$age, d_WT$MT_copynumber, method = "spearman")
+cor.test(d_CA$age, d_CA$MT_copynumber ,method="spearman")
+```
+
+## Figure 4
+### plotting telomere length vs MT_copynumber, histology group
+```{r, echo=TRUE, message=FALSE}
+
+ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
+  stat_smooth(method = "lm", col = "black") +
+  facet_wrap(~hist_group) + 
+  labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
+  theme_bw() + scale_x_log10() + scale_y_log10() #+ 
+  #theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+# ggsave("Figure_4.tiff", units = "in", width = 6, height = 3, dpi =300)
+```
+
+### spearman test
+```{r, echo=T, message=F}
+cor.test(d_PA$MT_copynumber, d_PA$telomere_length, method = "spearman")
+cor.test(d_WT$MT_copynumber, d_WT$telomere_length, method = "spearman")
+cor.test(d_CA$MT_copynumber, d_CA$telomere_length, method="spearman")
+```
