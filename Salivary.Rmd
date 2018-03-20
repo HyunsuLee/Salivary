@@ -35,7 +35,6 @@ require("gridExtra")
 ## data subsetting according to heejin's opinion
 ```{r, echo=TRUE, message=FALSE}
 d <- subset(d, d$hist_group!="etc")
-
 ```
 
 
@@ -51,11 +50,18 @@ PA 19, WT 8, CA 5, etc 4.
 size mean 3 (+-sd: 1.13)cm
 benign 31/36(86.1%), malig 5/36(13.9%)
 
+after exclude etc(benign)
+Male 16, female 16
+Parotid 27, Submandibular 5
+PA 19, WT 8, CA 5
+size mean 3.05(+-sd: 1.18)cm
+benign 27/32(84.4%), CA 5/32(15.6%)
+
 ### Gender table
 ```{r, echo=TRUE, message=FALSE}
 d_table<-d[c("sex", "age", "location", "hist_group","size" )]
-print(ztable(mytable(hist_group~.,data=d_table)))
-print(ztable(mytable(sex~.,data=d_table))) #table_1  gender table
+# print(ztable(mytable(hist_group~.,data=d_table)))
+# print(ztable(mytable(sex~.,data=d_table))) #excluded by heejin
 ```
 ### gender age compare with MW test
 ```{r, echo=TRUE, message=FALSE}
@@ -72,7 +78,7 @@ wilcox.test(male_size, female_size)
 
 ### location table
 ```{r, echo=TRUE, message=FALSE}
-print(ztable(mytable(location~age + hist_group + size, data = d_table))) #table_2 location table
+# print(ztable(mytable(location~age + hist_group + size, data = d_table))) #excluded by heejin
 ```
 ### location age compare with MW test
 ```{r, echo=TRUE, message=FALSE}
@@ -87,21 +93,23 @@ subman_size <- subset(d$size, d$location_group == 2)
 wilcox.test(paro_size, subman_size)
 ```
 
+## Table 1
 ### Histology_grouping table
 ```{r, echo=TRUE, message=FALSE}
-print(ztable(mytable(hist_group~age + size, data=d_table))) #table_3 histology table
+mytable(hist_group~., data=d_table)
+# print(ztable(mytable(hist_group~., data=d_table))) #table_1 for final version
 # summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 
 ### histology all table.
 ```{r, echo=TRUE, message=FALSE}
-print(ztable(mytable(sex~histology, data=d_CA))) #table_3 histology table
+# print(ztable(mytable(sex~histology, data=d_CA))) #excluded by heejin
 # summary(aov(size~hist_group, data=d)) same result with chi-squire table analysis.
 ```
 ### Oncogene table
 ```{r, echo=TRUE, message=FALSE}
 d_onco_t<-d[c("hist_group", "MT_copynumber", "PIK3CA_amp")] # telomere_length ommited due to POR letter
-print(ztable(mytable(hist_group~., data=d_onco_t))) #table_3 oncogene table
+# print(ztable(mytable(hist_group~., data=d_onco_t))) #figur들로대체.
 
 #ANOVA has same result chi-squire table analysis
 #summary(aov(telomere_length~hist_group, data=d))
@@ -109,7 +117,7 @@ print(ztable(mytable(hist_group~., data=d_onco_t))) #table_3 oncogene table
 #summary(aov(MT_copynumber~hist_group, data=d))
 ```
 
-
+## Figure 1(use vertical arrange)
 ### Box plot for ongene in salivary gland.
 ```{r, echo=TRUE, message=FALSE}
 # plotting the box plot for telomere length. POR letter published
@@ -141,32 +149,32 @@ fig1_b <- ggplot(d, aes(hist_group, MT_copynumber)) + geom_boxplot(fill="grey") 
 figure1_vert <- arrangeGrob(fig1_a, fig1_b, nrow = 2)
 figure1_hori <- arrangeGrob(fig1_a, fig1_b, ncol = 2)
 
-ggsave("Fig1_v.tiff", figure1_vert, units = "in", width = 5, height = 8, dpi = 300)
+ggsave("Figure_1.tiff", figure1_vert, units = "in", width = 5, height = 8, dpi = 300)
 ggsave("Fig1_h.tiff", figure1_hori, units = "in", width = 10, height = 4, dpi = 300)
 ```
 
-
+## Figure 2
 ###plotting size vs oncogene, faceting plot
 ```{r, echo=TRUE, message=FALSE}
-fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
-  facet_wrap(~BenignCA) + 
+fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group) + 
   labs(x = NULL , y="Telomere length", shape = NULL) + 
-  theme_bw() + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
-  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+  theme_bw() # + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  # legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
 fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  facet_wrap(~BenignCA) +
+  facet_wrap(~hist_group) +
   labs(x = NULL , y="PIK3CA amplification", shape = NULL) + 
   theme_bw()
 
 fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
-  facet_wrap(~BenignCA) +
+  facet_wrap(~hist_group) +
   labs(x ="Size (cm)", y="Mitochondria copy number", shape = NULL) + 
   theme_bw() + scale_y_log10()
 
 figure2 <- arrangeGrob(fig2_a, fig2_b, fig2_c, nrow = 3)
 
-ggsave("Fig2.tiff", figure2, units = "in", width = 5, height = 8, dpi = 300)
+ggsave("Figure_2.tiff", figure2, units = "in", width = 5, height = 6.5, dpi = 300)
 ```
 
 
@@ -174,54 +182,92 @@ ggsave("Fig2.tiff", figure2, units = "in", width = 5, height = 8, dpi = 300)
 ```{r, echo=TRUE, message=FALSE}
 # Benign vs carcinoma subsetting for linear regression
 d_benign <- subset(d, hist_group != "CA")
+d_PA <- subset(d, hist_group == "PA")
+d_WT <- subset(d, hist_group == "WT")
 d_CA <- subset(d, hist_group == "CA")
-
-onc_size_be.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_benign)
-summary(onc_size_be.lm)
-onc_size_CA.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_CA)
-summary(onc_size_CA.lm)
 ```
+onc_size_be.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_benign)
+onc_size_PA.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_PA)
+onc_size_WT.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_WT)
+onc_size_CA.lm <- lm(size ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_CA)
+summary(onc_size_be.lm)
+summary(onc_size_PA.lm)
+summary(onc_size_WT.lm)
+summary(onc_size_CA.lm)
+
 non-significant.
 benign 
 tl vs size p = 0.0522
 pik3 vs size p = 0.8212
 MT_CN vs size p = 0.6074
+PA
+tl vs size p = 0.1257
+pik3 vs size p = 0.471828
+MT_CN vs size p = 0.854790
+WT
+tl vs size p = 0.6962
+pik3 vs size p = 0.1960
+MT_CN vs size p = 0.1784
 CA not available due to low number.
 
+
+## Figure 2 correlation (Significant!!)
 ### size correlation spearman test in benign
 ```{r, echo=TRUE, message=FALSE}
-cor.test(d_benign$size,d_benign$telomere_length ,method="spearman")
-cor.test(d_CA$size,d_CA$telomere_length ,method="spearman")
+# cor.test(d_benign$size,d_benign$telomere_length ,method="spearman")
+cor.test(d_PA$size, d_PA$telomere_length, method = "spearman")
+cor.test(d_WT$size, d_WT$telomere_length, method = "spearman")
+cor.test(d_CA$size,d_CA$telomere_length, method="spearman")
 
-cor.test(d_benign$size,d_benign$PIK3CA_amp ,method="spearman")
+# cor.test(d_benign$size,d_benign$PIK3CA_amp ,method="spearman")
+cor.test(d_PA$size, d_PA$PIK3CA_amp, method = "spearman")
+cor.test(d_WT$size, d_WT$PIK3CA_amp, method = "spearman")
 cor.test(d_CA$size,d_CA$PIK3CA_amp ,method="spearman")
 
-cor.test(d_benign$size,d_benign$MT_copynumber ,method="spearman")
+# cor.test(d_benign$size,d_benign$MT_copynumber ,method="spearman")
+cor.test(d_PA$size, d_PA$MT_copynumber, method = "spearman")
+cor.test(d_WT$size, d_WT$MT_copynumber, method = "spearman")
 cor.test(d_CA$size,d_CA$MT_copynumber ,method="spearman")
 ```
 non significant 
-TL benign 0.08754 CA 0.95
-pik3ca benign 0.5761 CA 0.417
-mtDNA benign 0.759 CA 1
+TL benign 0.08754 PA 0.03968 WT 0.9389 CA 0.95
+pik3ca benign 0.5761 PA 0.6105 WT 0.01954 CA 0.417
+mtDNA benign 0.759 PA 0.1805 WT 0.002439 CA 1
 
-
-## plotting age vs telomere_length, facetting plot
+## Figure 3
+### plotting age vs telomere_length, oncogenes, facetting plot
 ```{r, echo=TRUE, message=FALSE}
-ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) + 
-  facet_wrap(~BenignCA) + 
+fig3_a <- ggplot(d, aes(age, telomere_length)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
   labs(x ="age", y="Telomere length", shape = NULL) + 
-  theme_bw() + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
-  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
-ggsave("Fig3.tiff", units = "in", width = 5, height = 3, dpi = 300)
+  theme_bw() #+ theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+fig3_b <- ggplot(d, aes(age, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
+  labs(x ="age", y="PIK3CA", shape = NULL) + 
+  theme_bw() #+ theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+fig3_c <- ggplot(d, aes(age, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
+  facet_wrap(~hist_group, scales = "free_x") + 
+  labs(x ="age", y="mitochondria", shape = NULL) + scale_y_log10() +
+  theme_bw() # + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  # legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+
+
+figure3 <- arrangeGrob(fig3_a, fig3_b, fig3_c, nrow = 3)
+
+ggsave("Figure_3.tiff", figure3, units = "in", width = 5, height = 6.5, dpi = 300)
 ```
 
 ## Linear regression for oncogene vs age.
-```{r, echo=TRUE, message=FALSE}
+{r, echo=TRUE, message=FALSE}
 onc_age_be.lm <- lm(age ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_benign)
 summary(onc_age_be.lm)
 onc_age_CA.lm <- lm(age ~ telomere_length + PIK3CA_amp + MT_copynumber, data = d_CA)
 summary(onc_age_CA.lm)
-```
+
 non-significant
 benign
 tl vs age p = 0.259
@@ -229,45 +275,66 @@ CA not available due to low number.
 
 ### age correlation spearman test in benign and malignant.
 ```{r, echo=TRUE, message=FALSE}
-cor.test(d_benign$age,d_benign$telomere_length ,method="spearman")
-cor.test(d_CA$age,d_CA$telomere_length ,method="spearman")
+# cor.test(d_benign$size,d_benign$telomere_length ,method="spearman")
+cor.test(d_PA$age, d_PA$telomere_length, method = "spearman")
+cor.test(d_WT$age, d_WT$telomere_length, method = "spearman")
+cor.test(d_CA$age, d_CA$telomere_length, method="spearman")
+
+# cor.test(d_benign$size,d_benign$PIK3CA_amp ,method="spearman")
+cor.test(d_PA$age, d_PA$PIK3CA_amp, method = "spearman")
+cor.test(d_WT$age, d_WT$PIK3CA_amp, method = "spearman")
+cor.test(d_CA$age, d_CA$PIK3CA_amp ,method="spearman")
+
+# cor.test(d_benign$size,d_benign$MT_copynumber ,method="spearman")
+cor.test(d_PA$age, d_PA$MT_copynumber, method = "spearman")
+cor.test(d_WT$age, d_WT$MT_copynumber, method = "spearman")
+cor.test(d_CA$age, d_CA$MT_copynumber ,method="spearman")
 ```
 non-significant
-benign p = 0.4039
-CA p = 0.35
+TL PA 0.5308 WT 0.9084 CA 0.35
+PIK3 PA 0.9935 WT 0.5284 CA 0.75
+MT PA 0.3655 WT 0.6703 CA 0.6833
 
 ### plotting telomere length vs MT_copynumber, histology group
 ```{r, echo=TRUE, message=FALSE}
 
-ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = T) +
+ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   stat_smooth(method = "lm", col = "black") +
-  facet_wrap(~BenignCA) + 
+  facet_wrap(~hist_group) + 
   labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
-  theme_bw() + scale_x_log10() + scale_y_log10() + 
-  theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
-  legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
+  theme_bw() + scale_x_log10() + scale_y_log10() #+ 
+  #theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
+  #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
-ggsave("Fig4.tiff", units = "in", width = 5, height = 3, dpi =300)
+ggsave("Figure_4.tiff", units = "in", width = 6, height = 3, dpi =300)
 ```
 
-## Linear regression for telomere vs mt_copynumber
-```{r, echo=TRUE, message=FALSE}
+### Linear regression for telomere vs mt_copynumber
+{r, echo=TRUE, message=FALSE}
 tl_mt_be.lm <- lm(telomere_length ~ MT_copynumber, data = d_benign)
 summary(tl_mt_be.lm)
+tl_mt_PA.lm <- lm(telomere_length ~ MT_copynumber, data = d_PA)
+summary(tl_mt_PA.lm)
 tl_mt_CA.lm <- lm(telomere_length ~ MT_copynumber, data = d_CA)
 summary(tl_mt_CA.lm)
-```
+
 non-significant.
 benign p = 0.4345
+PA p = 0.3
 CA p = 0.838
 
+## Figure 4 spearman(non-significant)
 ### tl vs mt correlation spearman test in benign and malignant.
 ```{r, echo=TRUE, message=FALSE}
 cor.test(d_benign$telomere_length,d_benign$MT_copynumber ,method="spearman")
+cor.test(d_PA$telomere_length, d_PA$MT_copynumber, method = "spearman")
+cor.test(d_WT$telomere_length, d_WT$MT_copynumber, method = "spearman")
 cor.test(d_CA$telomere_length,d_CA$MT_copynumber ,method="spearman")
 ```
 non-significant.
-benign p = 0.676
+benign p = 0.4551
+PA p = 0.399
+WT p = 0.5948
 CA p = 0.95
 
 #below here, analyzed but not including for paper
@@ -310,7 +377,7 @@ summary(pik_mt_CA.lm)
 non-significant.
 
 ### 3D plotting telomere length vs MT vs PIK3CA, histology group
-```{r echo=FALSE}
+{r echo=FALSE}
 '
 d_3d <- subset(d, telomere_length <120 & MT_copynumber <9)
 z <- d_3d$telomere_length
@@ -324,11 +391,11 @@ scatter3d(x, y, z, surface = FALSE,
 # require("rgl")          
 # rgl.snapshot(filename = "TL_PI3_MT_3d.png")   그림을 내보기전에 축을적당히 회전시켜야함.
 '
-```
+
 
 
 ### drawing box plot sex vs age. omit.
-```{r, echo=TRUE, message=FALSE}
+{r, echo=TRUE, message=FALSE}
 '
 ggplot(d, aes(sex, age)) + geom_boxplot(aes(fill=sex)) +
   theme_bw() + scale_fill_brewer(palette = "Greys") + 
@@ -337,10 +404,10 @@ ggplot(d, aes(sex, age)) + geom_boxplot(aes(fill=sex)) +
 
 ggsave("sex_age.tiff", units = "in", width = 5, height = 4, dpi =300)
 '
-```
+
 
 ### benign tumor histology, gender density bar graph. omit.
-```{r, echo=TRUE, message=FALSE}
+{r, echo=TRUE, message=FALSE}
 '
 d_b <- subset(d, hist_group != "carcinoma")
 
@@ -381,13 +448,13 @@ ggplot(d_a_sub, aes(x = sex,y =size)) +
 
 ggsave("sex_size.tiff", units = "in", width = 5, height = 4, dpi =300)
 '
-```
+
 
 
 
 
 ### Histology vs size dot plot. omit.
-```{r echo=F}
+{r echo=F}
 '''
 ggplot(d, aes(x = hist_group,y =size)) + 
   geom_dotplot(binaxis = "y",binwidth = 0.2, stackdir = "center", aes(shape = hist_group)) +
@@ -395,5 +462,5 @@ ggplot(d, aes(x = hist_group,y =size)) +
 
 ggsave("histVSsize.tiff", units = "in", width = 5, height = 4, dpi =300)
 '''
-```
+
 
