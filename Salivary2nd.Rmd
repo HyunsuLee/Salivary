@@ -54,8 +54,18 @@ sd(d$size)
 ## Table 1
 ### Histology_grouping table
 ```{r, echo=TRUE, warning=FALSE}
-d_table<-d[c("sex", "age", "location", "hist_group","size" )]
+d_table<-d[c("sex", "age", "location", "hist_group", "size", "telomere_length", "PIK3CA_amp", "MT_copynumber" )]
 mytable(hist_group~., data=d_table)
+```
+## Table 2(alternative to figure1 - Histo group vs oncogenes)
+```{r, echo=TRUE, warning=FALSE}
+onco_table<-d[c("hist_group", "telomere_length", "PIK3CA_amp", "MT_copynumber" )]
+mytable(hist_group~., data=onco_table)
+```
+### TL compare
+```{r, echo=TRUE, warning=FALSE}
+t.test(d_PA$telomere_length, d_CA$telomere_length) 
+wilcox.test(d_PA$telomere_length, d_CA$telomere_length) 
 ```
 
 ## Figure 1(use vertical arrange)
@@ -98,17 +108,17 @@ fig2_a <- ggplot(d, aes(size, telomere_length)) + geom_point(aes(shape = factor(
 
 fig2_b <- ggplot(d, aes(size, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   facet_wrap(~hist_group) +
-  labs(x = NULL , y="PIK3CA amplification", shape = NULL) + 
+  labs(x = NULL , y="PIK3CA", shape = NULL) + 
   theme_bw()
 
 fig2_c <- ggplot(d, aes(size, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   facet_wrap(~hist_group) +
-  labs(x ="Size (cm)", y="Mitochondria copy number", shape = NULL) + 
+  labs(x ="Size (cm)", y="mtCN", shape = NULL) + 
   theme_bw() + scale_y_log10()
 
 figure2 <- arrangeGrob(fig2_a, fig2_b, fig2_c, nrow = 3)
 plot(figure2)
-ggsave("Figure_2.tiff", figure2, units = "in", width = 5, height = 6.5, dpi = 300)
+ggsave("Figure_1_n.tiff", figure2, units = "in", width = 5, height = 6.5, dpi = 300)
 ```
 
 ## Figure 2 correlation (Significant!!)
@@ -144,13 +154,13 @@ fig3_b <- ggplot(d, aes(age, PIK3CA_amp)) + geom_point(aes(shape = factor(hist_g
 
 fig3_c <- ggplot(d, aes(age, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) + 
   facet_wrap(~hist_group, scales = "free_x") + 
-  labs(x ="age", y="mitochondria", shape = NULL) + scale_y_log10() +
+  labs(x ="age", y="mtCN", shape = NULL) + scale_y_log10() +
   theme_bw() # + theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
   # legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
 figure3 <- arrangeGrob(fig3_a, fig3_b, fig3_c, nrow = 3)
 plot(figure3)
-ggsave("Figure_3.tiff", figure3, units = "in", width = 5, height = 6.5, dpi = 300)
+ggsave("Figure_2_n.tiff", figure3, units = "in", width = 5, height = 6.5, dpi = 300)
 ```
 
 ### age correlation spearman test in benign and malignant.
@@ -175,12 +185,12 @@ cor.test(d_CA$age, d_CA$MT_copynumber ,method="spearman")
 ggplot(d, aes(telomere_length, MT_copynumber)) + geom_point(aes(shape = factor(hist_group)), show.legend = F) +
   stat_smooth(method = "lm", col = "black") +
   facet_wrap(~hist_group) + 
-  labs(x ="Telomere length", y="Mitochondria copy number", shape = NULL) + 
+  labs(x ="Telomere length", y="mtCN", shape = NULL) + 
   theme_bw() + scale_x_log10() + scale_y_log10() #+ 
   #theme(legend.position = c(.99, .99), legend.justification = c("right", "top"),
   #legend.box.just = "right",legend.margin = margin(1, 1, 1, 1)) # draw legend inside the figure
 
-ggsave("Figure_4.tiff", units = "in", width = 6, height = 3, dpi =300)
+ggsave("Figure_3_n.tiff", units = "in", width = 6, height = 3, dpi =300)
 ```
 
 ### spearman test
